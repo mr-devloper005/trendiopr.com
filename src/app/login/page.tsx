@@ -21,14 +21,14 @@ function getLoginConfig(kind: ReturnType<typeof getProductKind>) {
   }
   if (kind === 'editorial') {
     return {
-      shell: 'bg-[#fbf6ee] text-[#241711]',
-      panel: 'border border-[#dcc8b7] bg-[#fffdfa]',
-      side: 'border border-[#e6d6c8] bg-[#fff4e8]',
-      muted: 'text-[#6e5547]',
-      action: 'bg-[#241711] text-[#fff1e2] hover:bg-[#3a241b]',
+      shell: 'bg-[#FFF7F8] text-neutral-900',
+      panel: 'border border-rose-100 bg-white shadow-[0_16px_48px_rgba(17,24,39,0.08)]',
+      side: 'border border-rose-100 bg-[linear-gradient(155deg,#0C0C0C_0%,#2b0f19_100%)] text-white',
+      muted: 'text-neutral-500',
+      action: 'bg-[#FF0B55] text-white hover:bg-[#CF0F47]',
       icon: FileText,
-      title: 'Sign in to your publication workspace',
-      body: 'Draft, review, and publish long-form work with the calmer reading system intact.',
+      title: 'Sign in to your press room',
+      body: 'Access release drafts, newsroom analytics, and distribution workflows from one editorial workspace.',
     }
   }
   if (kind === 'visual') {
@@ -39,19 +39,19 @@ function getLoginConfig(kind: ReturnType<typeof getProductKind>) {
       muted: 'text-slate-300',
       action: 'bg-[#8df0c8] text-[#07111f] hover:bg-[#77dfb8]',
       icon: ImageIcon,
-      title: 'Enter the creator workspace',
-      body: 'Open your visual feed, creator profile, and publishing tools without dropping into a generic admin shell.',
+      title: 'Sign in to your media account',
+      body: 'Manage visual releases, campaign assets, and profile publishing in one place.',
     }
   }
   return {
-    shell: 'bg-[#f7f1ea] text-[#261811]',
-    panel: 'border border-[#ddcdbd] bg-[#fffaf4]',
-    side: 'border border-[#e8dbce] bg-[#f3e8db]',
-    muted: 'text-[#71574a]',
-    action: 'bg-[#5b2b3b] text-[#fff0f5] hover:bg-[#74364b]',
+    shell: 'bg-[#FFF7F8] text-neutral-900',
+    panel: 'border border-rose-100 bg-white shadow-[0_16px_48px_rgba(17,24,39,0.08)]',
+    side: 'border border-rose-100 bg-[linear-gradient(155deg,#0C0C0C_0%,#2b0f19_100%)] text-white',
+    muted: 'text-neutral-500',
+    action: 'bg-[#FF0B55] text-white hover:bg-[#CF0F47]',
     icon: Bookmark,
-    title: 'Open your curated collections',
-    body: 'Manage saved resources, collection notes, and curator identity from a calmer workspace.',
+    title: 'Open your PR workspace',
+    body: 'Review announcements, track publication status, and coordinate newsroom tasks securely.',
   }
 }
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
             <h1 className="mt-5 text-4xl font-semibold tracking-[-0.05em]">{config.title}</h1>
             <p className={`mt-5 text-sm leading-8 ${config.muted}`}>{config.body}</p>
             <div className="mt-8 grid gap-4">
-              {['Cleaner product-specific workflows', 'Palette and layout matched to the site family', 'Fewer repeated admin patterns'].map((item) => (
+              {['Secure account access', 'Release and campaign management', 'Analytics and distribution history'].map((item) => (
                 <div key={item} className="rounded-[1.5rem] border border-current/10 px-4 py-4 text-sm">{item}</div>
               ))}
             </div>
@@ -84,7 +84,7 @@ export default function LoginPage() {
           <div className={`rounded-[2rem] p-8 ${config.panel}`}>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">Welcome back</p>
             <form className="mt-6 grid gap-4">
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Email address" />
+              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Username or email" />
               <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Password" type="password" />
               <button type="submit" className={`inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold ${config.action}`}>Sign in</button>
             </form>
