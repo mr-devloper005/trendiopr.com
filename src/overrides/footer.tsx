@@ -50,9 +50,6 @@ export async function FooterOverride() {
             <Link href="/updates" className="block hover:text-white">
               Latest News
             </Link>
-            <Link href="/pricing" className="block hover:text-white">
-              Pricing
-            </Link>
           </div>
         </div>
         <div>

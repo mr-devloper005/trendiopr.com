@@ -9,7 +9,6 @@ export const NAVBAR_OVERRIDE_ENABLED = true
 
 const primaryLinks = [
   { label: 'Latest News', href: '/updates' },
-  { label: 'Pricing', href: '/pricing' },
 ]
 
 const secondaryLinks = [
