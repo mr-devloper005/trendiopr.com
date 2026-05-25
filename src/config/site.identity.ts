@@ -4,9 +4,9 @@ export const siteIdentity = {
   tagline: process.env.NEXT_PUBLIC_SITE_TAGLINE || 'Media distribution for modern brands',
   description:
     process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
-    'PressRelease.com helps teams publish trusted press releases, syndicate announcements, and track media reach from a single newsroom.',
-  domain: process.env.NEXT_PUBLIC_SITE_DOMAIN || 'pressrelease.com',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://pressrelease.com',
+    'TrendioPR.com helps teams publish trusted press releases, syndicate announcements, and track media reach from a single newsroom.',
+  domain: process.env.NEXT_PUBLIC_SITE_DOMAIN || 'trendiopr.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://trendiopr.com',
   ogImage: process.env.NEXT_PUBLIC_SITE_OG_IMAGE || '/og-default.png',
   googleMapsEmbedApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_API_KEY || '',
 } as const
