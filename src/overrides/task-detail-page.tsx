@@ -1,143 +1,173 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Facebook, Linkedin, Link2, Mail, Twitter } from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
-import { fetchTaskPostBySlug, fetchTaskPosts } from '@/lib/task-data'
-import type { TaskKey } from '@/lib/site-config'
-import { formatRichHtml, RichContent } from '@/components/shared/rich-content'
 import { ContentImage } from '@/components/shared/content-image'
-import { Facebook, Linkedin, Twitter } from 'lucide-react'
+import { fetchTaskPostBySlug, fetchTaskPosts, buildPostUrl } from '@/lib/task-data'
+import type { TaskKey } from '@/lib/site-config'
+import type { SitePost } from '@/lib/site-connector'
 import { SITE_CONFIG } from '@/lib/site-config'
+import { formatRichHtml, RichContent } from '@/components/shared/rich-content'
+import { CATEGORY_OPTIONS, normalizeCategory } from '@/lib/categories'
 
 export const TASK_DETAIL_PAGE_OVERRIDE_ENABLED = true
+
+const isValidImageUrl = (value?: string | null) =>
+  typeof value === 'string' && (value.startsWith('/') || /^https?:\/\//i.test(value))
+
+const getContent = (post: SitePost) => {
+  const content = post.content && typeof post.content === 'object' ? post.content : {}
+  return content as Record<string, unknown>
+}
+
+const getImageUrls = (post: SitePost, content: Record<string, unknown>) => {
+  const media = Array.isArray(post.media) ? post.media : []
+  const mediaImages = media.map((item) => item?.url).filter((url): url is string => isValidImageUrl(url))
+  const contentImages = Array.isArray(content.images)
+    ? content.images.filter((url): url is string => typeof url === 'string' && isValidImageUrl(url))
+    : []
+  const merged = [...mediaImages, ...contentImages]
+  if (merged.length) return merged
+  if (isValidImageUrl(content.logo as string)) return [content.logo as string]
+  return [] as string[]
+}
+
+const getCategoryLabel = (post: SitePost, content: Record<string, unknown>) => {
+  const raw =
+    (typeof content.category === 'string' && content.category.trim()) ||
+    (Array.isArray(post.tags) ? post.tags.find((tag) => typeof tag === 'string' && tag !== 'mediaDistribution') : '') ||
+    ''
+  if (!raw || typeof raw !== 'string') return 'Press releases'
+  const normalized = normalizeCategory(raw)
+  return CATEGORY_OPTIONS.find((item) => item.slug === normalized)?.name || raw.trim()
+}
 
 export async function TaskDetailPageOverride({ slug }: { task: TaskKey; slug: string }) {
   const post = await fetchTaskPostBySlug('mediaDistribution', slug)
   if (!post) notFound()
-  const recent = (await fetchTaskPosts('mediaDistribution', 8, { fresh: true })).filter((item) => item.slug !== slug).slice(0, 4)
-  const content = (post.content || {}) as Record<string, unknown>
-  const html = formatRichHtml((content.body as string) || post.summary || '', 'Release content will appear here.')
-  const canonicalPostUrl = `${SITE_CONFIG.baseUrl.replace(/\/$/, '')}/updates/${post.slug}`
-  const subtitle =
-    typeof content.description === 'string' && content.description.trim()
-      ? content.description
-      : post.summary || 'Read the complete release details below.'
+
+  const related = (await fetchTaskPosts('mediaDistribution', 8, { fresh: true }))
+    .filter((item) => item.slug !== slug)
+    .slice(0, 4)
+
+  const content = getContent(post)
+  const rawBody =
+    (typeof content.body === 'string' && content.body.trim()) ||
+    (typeof content.description === 'string' && content.description.trim()) ||
+    post.summary ||
+    ''
+  const html = formatRichHtml(rawBody, '')
+  const images = getImageUrls(post, content)
+  const hero = images[0]
+  const archivePath = SITE_CONFIG.taskViews.mediaDistribution || '/updates'
+  const categoryLabel = getCategoryLabel(post, content)
+  const categorySlug = normalizeCategory(categoryLabel)
+  const pageUrl = `${SITE_CONFIG.baseUrl.replace(/\/$/, '')}${buildPostUrl('mediaDistribution', post.slug)}`
+  const shareText = encodeURIComponent(post.title)
+  const shareUrl = encodeURIComponent(pageUrl)
+  const date = post.publishedAt
+    ? new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : ''
 
   return (
-    <div className="min-h-screen bg-[#FFF7F8] text-neutral-900">
+    <div className="min-h-screen bg-white text-foreground">
       <NavbarShell />
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-          <article className="rounded-3xl border border-rose-100 bg-white p-6 shadow-[0_16px_48px_rgba(17,24,39,0.08)] sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CF0F47]">Press Release</p>
-            <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">{post.title}</h1>
-            <p className="mt-4 max-w-4xl text-base leading-8 text-neutral-600">{subtitle}</p>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-neutral-600">
-              <span className="rounded-full bg-black px-3 py-1.5 text-white">
-                {new Date(post.publishedAt || Date.now()).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
+      <article className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:pt-12">
+        <nav className="text-xs font-medium text-muted-foreground">
+          <Link href="/" className="hover:text-primary">
+            Home
+          </Link>
+          <span className="mx-2 opacity-40">/</span>
+          <Link href={archivePath} className="hover:text-primary">
+            Press releases
+          </Link>
+          <span className="mx-2 opacity-40">/</span>
+          <Link href={`${archivePath}?category=${categorySlug}`} className="hover:text-primary">
+            {categoryLabel}
+          </Link>
+        </nav>
+
+        <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
+          <div className="min-w-0">
+            <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold leading-[1.12] tracking-[-0.03em] text-foreground sm:text-4xl lg:text-[2.35rem]">
+              {post.title}
+            </h1>
+
+            {date ? (
+              <div className="mt-5 text-sm text-muted-foreground">
+                <span>{date}</span>
+              </div>
+            ) : null}
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition hover:border-primary/40 hover:bg-muted"
+                aria-label="Share on X"
+              >
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition hover:border-primary/40 hover:bg-muted"
+                aria-label="Share on LinkedIn"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition hover:border-primary/40 hover:bg-muted"
+                aria-label="Share on Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href={`mailto:?subject=${shareText}&body=${shareUrl}`}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition hover:border-primary/40 hover:bg-muted"
+                aria-label="Email this release"
+              >
+                <Mail className="h-4 w-4" />
+              </a>
+              <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
+                <Link2 className="h-3.5 w-3.5" />
+                {pageUrl.replace(/^https?:\/\//, '')}
               </span>
-              <span>By {post.authorName || 'PressRelease.com Editorial Team'}</span>
             </div>
 
-            <div className="mt-8 relative h-64 overflow-hidden rounded-2xl border border-rose-100 sm:h-96">
-              <ContentImage
-                src="/pressrelease/freepik-single-release.jpg"
-                alt="Press release detail page inspiration"
-                fill
-                className="object-cover"
-                intrinsicWidth={1280}
-                intrinsicHeight={720}
-              />
-            </div>
+            {hero ? (
+              <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-sm">
+                <ContentImage src={hero} alt={post.title} fill className="object-cover" priority />
+              </div>
+            ) : null}
 
-            <div className="prose prose-lg mt-8 max-w-none prose-headings:font-semibold prose-p:leading-8 prose-a:text-[#CF0F47]">
-              <RichContent html={html} />
-            </div>
+            <RichContent html={html} className="article-content mt-10 max-w-none text-[1.05rem] leading-[1.75] text-foreground/90" />
+          </div>
 
-            <div className="mt-10 rounded-2xl border border-rose-100 bg-[#FFF7F8] p-5">
-              <p className="text-sm font-semibold text-neutral-800">Share this release</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {[
-                  {
-                    label: 'Twitter',
-                    href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(canonicalPostUrl)}`,
-                    icon: Twitter,
-                  },
-                  {
-                    label: 'Facebook',
-                    href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalPostUrl)}`,
-                    icon: Facebook,
-                  },
-                  {
-                    label: 'LinkedIn',
-                    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalPostUrl)}`,
-                    icon: Linkedin,
-                  },
-                ].map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-[#FFDEDE]"
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.label}
-                  </a>
+          <aside className="space-y-6 lg:pt-2">
+            <div className="rounded-[1.25rem] border border-border bg-white p-6 shadow-sm">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">More releases</p>
+              <ul className="mt-4 space-y-4">
+                {related.map((item) => (
+                  <li key={item.id}>
+                    <Link href={buildPostUrl('mediaDistribution', item.slug)} className="block text-sm font-semibold leading-snug text-foreground hover:text-primary">
+                      {item.title}
+                    </Link>
+                  </li>
                 ))}
-              </div>
-            </div>
-          </article>
-
-          <aside className="space-y-4">
-            <div className="rounded-2xl border border-rose-100 bg-white p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#CF0F47]">Navigation</p>
-              <div className="mt-4 space-y-3 text-sm">
-                <Link href="/" className="block hover:text-[#CF0F47]">
-                  Home
-                </Link>
-                <Link href="/updates" className="block hover:text-[#CF0F47]">
-                  Latest News
-                </Link>
-                <Link href="/pricing" className="block hover:text-[#CF0F47]">
-                  Pricing
-                </Link>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-rose-100 bg-white p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#CF0F47]">Contact media desk</p>
-              <p className="mt-3 text-sm leading-7 text-neutral-600">
-                Need clarification or a follow-up statement? Reach our editorial response team.
-              </p>
-              <Link href="/contact" className="mt-4 inline-flex text-sm font-semibold text-[#FF0B55]">
-                Open contact page
-              </Link>
+              </ul>
             </div>
           </aside>
         </div>
+      </article>
 
-        <section className="mt-10">
-          <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold tracking-[-0.02em]">Related articles</h2>
-            <Link href="/updates" className="text-sm font-semibold text-[#FF0B55]">
-              Browse all
-            </Link>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {recent.map((item) => (
-              <Link key={item.id} href={`/updates/${item.slug}`} className="rounded-2xl border border-rose-100 bg-white p-4 hover:bg-[#FFDEDE]/40">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#CF0F47]">Related</p>
-                <p className="mt-2 line-clamp-3 text-sm font-semibold leading-6">{item.title}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      </main>
       <Footer />
     </div>
   )
