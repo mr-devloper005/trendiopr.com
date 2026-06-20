@@ -25,9 +25,6 @@ export async function TaskListPageOverride(_: { task: TaskKey; category?: string
               Discover announcements by topic, narrow by date windows, and open full release pages with clean editorial hierarchy.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/pricing" className="rounded-full bg-[#FF0B55] px-5 py-2.5 text-sm font-semibold text-white">
-                Compare Plans
-              </Link>
               <Link href="/contact" className="rounded-full border border-rose-200 px-5 py-2.5 text-sm font-semibold text-neutral-700 hover:bg-[#FFDEDE]">
                 Contact Editorial Team
               </Link>
@@ -65,13 +62,6 @@ export async function TaskListPageOverride(_: { task: TaskKey; category?: string
               <div className="rounded-2xl border border-rose-100 bg-white p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#CF0F47]">Lead story</p>
                 <h2 className="mt-3 text-lg font-semibold leading-7">{lead.title}</h2>
-                <p className="mt-2 text-xs text-neutral-500">
-                  {new Date(lead.publishedAt || Date.now()).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </p>
                 <Link href={`/updates/${lead.slug}`} className="mt-4 inline-flex text-sm font-semibold text-[#FF0B55]">
                   Open article
                 </Link>

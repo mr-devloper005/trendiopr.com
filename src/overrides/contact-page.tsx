@@ -62,15 +62,7 @@ export function ContactPageOverride() {
                 />
               </div>
             </div>
-            <div className="rounded-3xl border border-rose-100 bg-white p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#CF0F47]">Telephone Hours</p>
-              <p className="mt-3 text-sm text-neutral-700">Monday to Friday</p>
-              <p className="text-sm text-neutral-700">8:30am to 5:00pm Pacific</p>
-              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#CF0F47]">Toll Free Telephone</p>
-              <p className="mt-3 text-sm text-neutral-700">+1 (888) 880-9539</p>
-              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#CF0F47]">US Address</p>
-              <p className="mt-3 text-sm leading-6 text-neutral-700">Suite 1400, 505 Second Avenue, Seattle, WA 98104</p>
-            </div>
+
           </div>
         </section>
 

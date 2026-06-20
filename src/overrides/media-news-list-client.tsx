@@ -89,13 +89,6 @@ export function MediaNewsListClient({ posts }: { posts: SitePost[] }) {
             href={`/updates/${post.slug}`}
             className="group rounded-2xl border border-rose-100 bg-white p-5 shadow-[0_10px_34px_rgba(17,24,39,0.06)] transition-transform duration-200 hover:-translate-y-1"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#CF0F47]">
-              {new Date(post.publishedAt || Date.now()).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </p>
             <h2 className="mt-3 line-clamp-3 text-lg font-semibold leading-7">{post.title}</h2>
             <p className="mt-3 line-clamp-4 text-sm leading-7 text-neutral-600">{getSummary(post)}</p>
             <p className="mt-4 text-sm font-semibold text-[#FF0B55] group-hover:text-[#CF0F47]">Read press release</p>
