@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Menu, Search, X } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site-config'
 
@@ -23,11 +24,7 @@ export function NavbarOverride() {
     <header className="sticky top-0 z-50 border-b border-rose-100 bg-white/95 text-neutral-900 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <div className="rounded-xl bg-black px-2.5 py-1.5 text-sm font-bold text-white">PR</div>
-          <div className="min-w-0">
-            <p className="truncate text-base font-semibold tracking-tight">{SITE_CONFIG.name}</p>
-            <p className="truncate text-[11px] uppercase tracking-[0.2em] text-[#CF0F47]">Media Release Room</p>
-          </div>
+          <Image src="/logo.png" alt={SITE_CONFIG.name} width={140} height={40} className="h-10 w-auto object-contain" priority />
         </Link>
 
         <nav className="hidden items-center gap-2 md:flex">

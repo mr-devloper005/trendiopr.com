@@ -27,7 +27,7 @@ export async function HomePageOverride() {
           <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
             <div>
               <span className="inline-flex rounded-full bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white">
-                Pressrelease.com
+                TrendioPR.com
               </span>
               <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-6xl">
                 Publish media-ready press releases with a clean SaaS newsroom experience.
@@ -36,12 +36,6 @@ export async function HomePageOverride() {
                 Launch updates, leadership announcements, and campaign stories in a format built for trust, readability, and discovery.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/pricing"
-                  className="rounded-full bg-[#FF0B55] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#CF0F47]"
-                >
-                  See Pricing
-                </Link>
                 <Link
                   href="/updates"
                   className="rounded-full border border-[#FF0B55]/30 bg-white px-6 py-3 text-sm font-semibold text-[#CF0F47] transition-colors duration-200 hover:bg-[#FFDEDE]"
@@ -118,9 +112,6 @@ export async function HomePageOverride() {
                 href={`/updates/${post.slug}`}
                 className="group rounded-2xl border border-rose-100 bg-white p-5 shadow-[0_10px_32px_rgba(17,24,39,0.06)] transition-transform duration-200 hover:-translate-y-1"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#CF0F47]">
-                  {new Date(post.publishedAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
                 <h3 className="mt-3 line-clamp-3 text-lg font-semibold leading-7">{post.title}</h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-7 text-neutral-600">{excerpt(post.summary)}</p>
                 <p className="mt-4 text-sm font-semibold text-[#FF0B55] transition-colors group-hover:text-[#CF0F47]">Read release</p>
@@ -208,10 +199,7 @@ export async function HomePageOverride() {
                 Choose a publishing plan, compare media reach, and launch your next release with editorial confidence.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/pricing" className="rounded-full bg-[#FF0B55] px-5 py-2.5 text-sm font-semibold text-white">
-                  Compare plans
-                </Link>
-                <Link href="/contact" className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white">
+<Link href="/contact" className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white">
                   Talk to sales
                 </Link>
               </div>
